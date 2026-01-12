@@ -1,0 +1,92 @@
+:root {
+    --color-fondo-pagina: #f0f0f0;
+    --color-borde-principal: black;
+    --color-borde-caja: #666;
+    --color-borde-celda: #ddd;
+    --color-fondo-celda: white;
+    --color-selected: #bbdefb;
+    --selected-border: #2196f3;
+    --color-sombra: #666;
+    --color-fondo-secundario:#2196f3
+}
+
+body{
+    font-family: 'Open Sans';
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--color-fondo-pagina);
+}
+
+h1{
+    text-align: center;
+    font-weight: 800;
+}
+
+#sudoku-board{
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    border: 3px solid var(--color-borde-principal);
+    gap: 0;
+    margin-top: 20px;
+    box-shadow: 0px 0px 5px var(--color-sombra);
+}
+#hidden-input{
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    height: 0;
+    width: 0;
+    z-index: -1;
+}
+
+.box{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--color-borde-caja);
+    gap: 0;
+}
+
+.cell{
+    width: 45px;
+    height: 45px;
+    background-color: var(--color-fondo-celda);
+    border: 1px solid var(--color-borde-celda);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    text-align: center;
+}
+
+.controles{
+    margin-top: 20px;
+}
+button{
+    font-size: 16px;
+    padding: 8px 16px;
+    margin: 0 5px;
+    cursor: pointer;
+    background-color: var(--color-fondo-celda);
+    border-radius: 15px;
+    box-shadow: 0px 0px 4px var(--color-sombra);
+    font-weight: 700;
+    transition: background-color 0.15s ease;
+}
+button:hover{
+    background-color: #d0d0d0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+#new-game-button{
+    background-color: var(--color-fondo-secundario);
+    color: var(--color-fondo-pagina);
+}
+#new-game-button:hover{
+    background-color: darkblue;
+}
+.cell.selected{
+    background-color:var(--color-selected) ;
+    outline: 2px solid var(--selected-border);
+    z-index: 10;
+}
