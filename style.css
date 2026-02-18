@@ -92,3 +92,62 @@ button:hover{
     outline: 2px solid var(--selected-border);
     z-index: 10;
 }
+
+/* --- Media Queries para Celulares --- */
+@media (max-width: 600px) {
+    
+    /* 1. Ajustar el Título */
+    h1 {
+        font-size: 24px;
+        margin: 10px 0;
+    }
+
+    /* 2. El Tablero se vuelve elástico */
+    #sudoku-board {
+        /* En lugar de tamaño fijo, usa el 96% del ancho de la pantalla */
+        width: 96vw; 
+        height: 96vw; /* Mantiene la proporción cuadrada */
+        
+        /* Centrado y márgenes seguros */
+        margin: 0 auto; 
+        max-width: 400px; /* Tope para que no se vea gigante en tablets */
+        max-height: 400px;
+    }
+
+    /* 3. Las celdas deben dejar de medir 45px */
+    .cell {
+        width: auto;  /* Se adapta al tamaño del Grid padre */
+        height: auto; /* Se adapta al tamaño del Grid padre */
+        
+        /* Reducimos un poco la letra para que entre bien */
+        font-size: 18px; 
+    }
+
+    /* 4. Ajustar los botones para que entren en una línea */
+    .controles {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap; /* Si no caben, bajan a otra línea */
+        gap: 5px;
+        margin-top: 15px;
+    }
+
+    button {
+        padding: 8px 12px; /* Botones un poco más compactos */
+        font-size: 14px;
+        margin: 2px;
+    }
+
+    /* 5. Si tienes el teclado visual (numpad), ajústalo también */
+    .numpad {
+        width: 96vw;
+        max-width: 400px;
+        margin: 15px auto;
+        gap: 5px;
+    }
+    
+    .num-btn {
+        width: auto; /* Que ocupen el espacio disponible */
+        height: 40px; /* Altura cómoda para el dedo */
+    }
+}
