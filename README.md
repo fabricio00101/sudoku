@@ -5,7 +5,7 @@ Un juego de Sudoku clásico, totalmente responsivo y generado procedimentalmente
 Este proyecto implementa un algoritmo de **Backtracking** para generar tableros únicos con solución garantizada y cuenta con una interfaz optimizada tanto para escritorio como para dispositivos móviles.
 
 ## 🚀 Demo
-Puedes ver el proyecto funcionando aquí: https://fabricio00101.github.io/sudoku/
+Podés ver el proyecto funcionando aquí: https://fabricio00101.github.io/sudoku/
 
 
 ## ✨ Características Principales
@@ -42,8 +42,7 @@ El núcleo del generador utiliza recursividad (Backtracking):
     ```bash
     git clone [https://github.com/tu-usuario/sudoku-web.git](https://github.com/tu-usuario/sudoku-web.git)
     ```
-2.  Abre el archivo `index.html` en tu navegador.
+2.  Abrí el archivo `index.html` en tu navegador.
 3.  ¡A jugar!
 
 ---
-Desarrollado con ❤️ por [Tu Nombre].
