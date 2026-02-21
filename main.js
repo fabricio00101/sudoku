@@ -129,29 +129,36 @@ function checkWinCondition(){
     }
 }
 
-// --- NUEVAS FUNCIONES DE GUARDADO ---
+// --- GUARDADO SEGURO ANTI-CRASHEOS ---
 function saveGame() {
     if (!board || !originalPuzzle || !solution) return;
-    const gameState = {
-        board: board,
-        originalPuzzle: originalPuzzle,
-        solution: solution
-    };
-    localStorage.setItem('sudoku_saved_game', JSON.stringify(gameState));
+    try {
+        const gameState = {
+            board: board,
+            originalPuzzle: originalPuzzle,
+            solution: solution
+        };
+        localStorage.setItem('sudoku_saved_game', JSON.stringify(gameState));
+    } catch (e) {
+        console.warn("Navegador bloqueó el guardado, se ignora.");
+    }
 }
 
 function loadGame() {
-    const savedData = localStorage.getItem('sudoku_saved_game');
-    if (savedData) {
-        const gameState = JSON.parse(savedData);
-        board = gameState.board;
-        originalPuzzle = gameState.originalPuzzle;
-        solution = gameState.solution;
-        return true; 
+    try {
+        const savedData = localStorage.getItem('sudoku_saved_game');
+        if (savedData) {
+            const gameState = JSON.parse(savedData);
+            board = gameState.board;
+            originalPuzzle = gameState.originalPuzzle;
+            solution = gameState.solution;
+            return true; 
+        }
+    } catch (e) {
+        console.warn("Navegador bloqueó la carga, se ignora.");
     }
     return false; 
 }
-// ------------------------------------
 
 function updateDOM(){
     for (let row = 0; row < 9; row++){
@@ -171,7 +178,6 @@ function updateDOM(){
             }
         }
     }
-    // Guardamos automáticamente cada vez que la pantalla se actualiza
     saveGame(); 
 }
 
@@ -249,35 +255,32 @@ function setupControlButtons(){
     });
 }
 
+// --- GENERACIÓN DIRECTA SIN SETTIMEOUT ---
 function startNewGame(){
-    // Si pide un juego nuevo, borramos el guardado viejo
-    localStorage.removeItem('sudoku_saved_game'); 
+    try {
+        localStorage.removeItem('sudoku_saved_game'); 
+    } catch(e) {}
     
     const boardElement = document.getElementById('sudoku-board');
-    
-    boardElement.innerHTML = '<h3 style="grid-column: span 3; text-align: center; margin-top: 50px;">Generando... ⏳</h3>';
+    boardElement.innerHTML = '';
     selectedCell = null;
 
-    setTimeout(() => {
-        boardElement.innerHTML = '';
-        createGridDOM();
+    createGridDOM();
 
-        let solvedBoard = Array(9).fill(0).map(()=> Array(9).fill(0));
-        fillPuzzle(solvedBoard);
-        solution = solvedBoard;
+    let solvedBoard = Array(9).fill(0).map(()=> Array(9).fill(0));
+    fillPuzzle(solvedBoard);
+    solution = solvedBoard;
 
-        originalPuzzle = createPuzzle(solvedBoard, 40);
-        board = originalPuzzle.map(row => row.slice());
+    originalPuzzle = createPuzzle(solvedBoard, 40);
+    board = originalPuzzle.map(row => row.slice());
 
-        updateDOM();
-    }, 50);
+    updateDOM();
 }
 
 function init(){
     setupEventListeners();
     setupControlButtons();
 
-    // Verificamos si hay partida guardada
     if (loadGame()) {
         createGridDOM(); 
         updateDOM();     
