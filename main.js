@@ -72,9 +72,12 @@ function fillPuzzle(board){
     }
     return true;
 }
-let solutionCounter
+let solutionCounter;
 
 function countSolutions(board){
+    
+    if (solutionCounter > 1) return;
+
     for (let row = 0; row < 9; row ++){
         for (let col = 0; col < 9; col++){
 
@@ -85,7 +88,10 @@ function countSolutions(board){
                         
                         countSolutions(board);
 
-                        board[row][col] = 0
+                        board[row][col] = 0;
+                        
+                        // OPTIMIZACIÓN: Cortamos la rama si ya nos pasamos de 1
+                        if (solutionCounter > 1) return; 
                     }
                 }
                 return;
@@ -213,14 +219,12 @@ function setupEventListeners(){
         if (originalPuzzle[row][col] !== 0) return;
 
         if (event.key >= '1' && event.key <= '9'){
-            const num = parseInt(event.key);;
-
+            const num = parseInt(event.key);
             board [row][col] = num;
-
             updateDOM();
             checkWinCondition();
         }
-        else if (event.key === 'Backspace' || event.key === 'Delete'){
+        else if (event.key === 'Backspace' || event.key === 'Delete' || event.key === '0'){
             board [row][col] = 0;
             updateDOM();
         }
@@ -236,28 +240,36 @@ function setupControlButtons(){
         board = originalPuzzle.map(row => row.slice());
         updateDOM();
     });
-    document.getElementById('new-game-button').addEventListener('click', () => {
-        if(confirm("Querés generar un nuevo juego? Se perderá el progreso actual.")){
-            startNewGame();
-        }
-    });
+document.getElementById('solve-button').addEventListener('click', () =>{
+    board = solution.map(row => row.slice()); 
+    updateDOM();
+    checkWinCondition();
+});
 }
 function startNewGame(){
     const boardElement = document.getElementById('sudoku-board');
-    boardElement.innerHTML = '';
-
+    
+    // 1. Borramos el tablero AL INSTANTE y ponemos un texto temporal
+    boardElement.innerHTML = '<h3 style="grid-column: span 3; text-align: center; margin-top: 50px;">Generando... ⏳</h3>';
     selectedCell = null;
 
-    createGridDOM()
+    // 2. Le damos 50 milisegundos de respiro al navegador para pintar el texto
+    setTimeout(() => {
+        // Borramos el texto
+        boardElement.innerHTML = '';
+        
+        // Creamos todo
+        createGridDOM();
 
-    let solvedBoard = Array(9).fill(0).map(()=> Array(9).fill(0));
-    fillPuzzle(solvedBoard);
-    solution = solvedBoard;
+        let solvedBoard = Array(9).fill(0).map(()=> Array(9).fill(0));
+        fillPuzzle(solvedBoard);
+        solution = solvedBoard;
 
-    originalPuzzle = createPuzzle(solvedBoard, 40);
-    board = originalPuzzle.map (row => row.slice());
+        originalPuzzle = createPuzzle(solvedBoard, 40);
+        board = originalPuzzle.map(row => row.slice());
 
-    updateDOM();
+        updateDOM();
+    }, 50); // <-- Esta pausa es la magia
 }
 function init(){
     setupEventListeners();

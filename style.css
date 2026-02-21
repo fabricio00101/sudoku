@@ -32,10 +32,10 @@ h1{
     box-shadow: 0px 0px 5px var(--color-sombra);
 }
 #hidden-input{
-    position: absolute;
+    position: fixed; /* Cambia absolute por fixed */
+    top: 50%;        /* Centrado verticalmente (invisible) */
+    left: 50%;
     opacity: 0;
-    top: 0;
-    left: 0;
     height: 0;
     width: 0;
     z-index: -1;
@@ -51,6 +51,7 @@ h1{
 }
 
 .cell{
+    cursor: pointer;
     width: 45px;
     height: 45px;
     background-color: var(--color-fondo-celda);
