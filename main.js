@@ -1,68 +1,54 @@
-let board
-let originalPuzzle
-let solution
+let board;
+let originalPuzzle;
+let solution;
+let solutionCounter;
 
 function checkRow(board, row, num){
     for (let col = 0; col < 9; col ++){
-        if (board[row][col] === num
-        ){
-            return false;
-        }
+        if (board[row][col] === num) return false;
     }
-    return true
+    return true;
 }
+
 function checkCol(board, col, num){
     for (let row = 0; row < 9; row ++){
-        if (board[row][col] === num
-        ){
-            return false;
-        }
+        if (board[row][col] === num) return false;
     }
-    return true
+    return true;
 }
+
 function checkBlock(board, row, col, num){
     const startRow = Math.floor(row/3) * 3;
     const startCol = Math.floor(col/3) * 3;
-    
-
     for (let r = 0; r < 3; r++){
         for (let c = 0; c < 3; c++){
-            if (board[startRow + r][startCol + c] === num){
-                return false
-            }
+            if (board[startRow + r][startCol + c] === num) return false;
         }
     }
-    return true
+    return true;
 }
 
 function isSafe(board, row, col, num) {
-    return (
-        checkRow(board, row, num) &&
-        checkCol(board, col, num) &&
-        checkBlock(board, row, col, num)
-    );
+    return checkRow(board, row, num) && checkCol(board, col, num) && checkBlock(board, row, col, num);
 }
+
 function shuffle(array){
     for (let i = array.length - 1; i > 0; i--){
         const j = Math.floor(Math.random() * (i +1));
         [array[i], array[j]] = [array[j], array[i]];
     }
-    return array
+    return array;
 }
 
 function fillPuzzle(board){
     for (let row = 0; row < 9; row ++){
         for (let col = 0; col < 9; col ++){
-            
             if (board[row][col] === 0){
                 const numbers = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-
                 for (const num of numbers){
                     if (isSafe(board, row, col, num)){
                         board[row][col] = num;
-                        if(fillPuzzle(board)){
-                            return true
-                        }
+                        if(fillPuzzle(board)) return true;
                         board[row][col] = 0;
                     }
                 }
@@ -72,26 +58,18 @@ function fillPuzzle(board){
     }
     return true;
 }
-let solutionCounter;
 
 function countSolutions(board){
-    
     if (solutionCounter > 1) return;
-
     for (let row = 0; row < 9; row ++){
         for (let col = 0; col < 9; col++){
-
             if (board[row][col] === 0){
                 for (let num = 1; num <= 9; num++){
                     if (isSafe(board, row, col, num)){
                         board[row][col] = num;
-                        
                         countSolutions(board);
-
                         board[row][col] = 0;
-                        
-                        // OPTIMIZACIÓN: Cortamos la rama si ya nos pasamos de 1
-                        if (solutionCounter > 1) return; 
+                        if (solutionCounter > 1) return;
                     }
                 }
                 return;
@@ -100,13 +78,13 @@ function countSolutions(board){
     }
     solutionCounter++;
 }
+
 function createPuzzle(solvedBoard, holesToMake){
     let puzzleBoard = solvedBoard.map(row => row.slice());
-
     let positions = [];
     for (let r = 0; r < 9; r++){
         for (let c = 0; c < 9; c++){
-            positions.push([r, c])
+            positions.push([r, c]);
         }
     }
     shuffle(positions);
@@ -120,8 +98,8 @@ function createPuzzle(solvedBoard, holesToMake){
         countSolutions(puzzleBoard.map(row => row.slice()));
         if (solutionCounter !== 1){
             puzzleBoard[row][col] = savedValue;
-        } else{
-            holesMade ++;
+        } else {
+            holesMade++;
         }
     }
     return puzzleBoard;
@@ -130,9 +108,7 @@ function createPuzzle(solvedBoard, holesToMake){
 function checkWinCondition(){
     for (let r = 0; r < 9; r++){
         for (let c = 0; c < 9; c++){
-            if (board[r][c] === 0){
-                return;
-            }
+            if (board[r][c] === 0) return;
         }
     } 
     let isCorrect = true;
@@ -146,44 +122,71 @@ function checkWinCondition(){
     }
     if (isCorrect){
         setTimeout(() =>{
-            alert("Felicidades, resolviste el sudoku!!!");
-        },100);
-    }else{
+            alert("¡Felicidades, resolviste el sudoku! 🎉");
+        }, 100);
+    } else {
         alert("El tablero está lleno, pero hay errores. Revisá tus numeros.");
     }
 }
+
+// --- NUEVAS FUNCIONES DE GUARDADO ---
+function saveGame() {
+    if (!board || !originalPuzzle || !solution) return;
+    const gameState = {
+        board: board,
+        originalPuzzle: originalPuzzle,
+        solution: solution
+    };
+    localStorage.setItem('sudoku_saved_game', JSON.stringify(gameState));
+}
+
+function loadGame() {
+    const savedData = localStorage.getItem('sudoku_saved_game');
+    if (savedData) {
+        const gameState = JSON.parse(savedData);
+        board = gameState.board;
+        originalPuzzle = gameState.originalPuzzle;
+        solution = gameState.solution;
+        return true; 
+    }
+    return false; 
+}
+// ------------------------------------
+
 function updateDOM(){
     for (let row = 0; row < 9; row++){
         for (let col = 0; col < 9; col++){
             const cellElement = document.getElementById(`cell-${row}-${col}`);
+            if(!cellElement) continue;
+
             const value = board[row][col];
-
             cellElement.classList.remove('pre-filled', 'selected');
-
-            cellElement.textContent = value === 0 ? "": value;
+            cellElement.textContent = value === 0 ? "" : value;
 
             if (originalPuzzle[row][col] !== 0){
                 cellElement.classList.add('pre-filled');
             }
             if (selectedCell && selectedCell.row === row && selectedCell.col === col){
-                cellElement.classList.add('selected')
+                cellElement.classList.add('selected');
             }
         }
     }
+    // Guardamos automáticamente cada vez que la pantalla se actualiza
+    saveGame(); 
 }
 
 let selectedCell = null;
+
 function setupEventListeners(){
     const boardElement = document.getElementById('sudoku-board');
     const hiddenInput = document.getElementById('hidden-input');
-
 
     boardElement.addEventListener('click', function(event){
         const target = event.target.closest('.cell');
         if (!target) return;
 
         const parts = target.id.split('-');
-        const row = parseInt (parts[1]);
+        const row = parseInt(parts[1]);
         const col = parseInt(parts[2]);
 
         selectedCell = { row, col };
@@ -197,20 +200,18 @@ function setupEventListeners(){
 
     hiddenInput.addEventListener('input', function(event){
         if(!selectedCell) return;
-        const { row, col} = selectedCell;
-
+        const { row, col } = selectedCell;
         const val = parseInt(event.target.value);
 
-        if (val >=1 && val <= 9){
+        if (val >= 1 && val <= 9){
             board[row][col] = val;
             updateDOM();
             checkWinCondition();
-
             hiddenInput.value = '';
-        }else{
+        } else {
             hiddenInput.value = '';
         }
-    })
+    });
 
     document.addEventListener('keydown', function(event){
         if (!selectedCell) return;
@@ -219,46 +220,46 @@ function setupEventListeners(){
         if (originalPuzzle[row][col] !== 0) return;
 
         if (event.key >= '1' && event.key <= '9'){
-            const num = parseInt(event.key);
-            board [row][col] = num;
+            board[row][col] = parseInt(event.key);
             updateDOM();
             checkWinCondition();
-        }
-        else if (event.key === 'Backspace' || event.key === 'Delete' || event.key === '0'){
-            board [row][col] = 0;
+        } else if (event.key === 'Backspace' || event.key === 'Delete' || event.key === '0'){
+            board[row][col] = 0;
             updateDOM();
         }
     });
 }
+
 function setupControlButtons(){
     document.getElementById('solve-button').addEventListener('click', () =>{
-        fillPuzzle(board);
+        board = solution.map(row => row.slice()); 
         updateDOM();
         checkWinCondition();
     });
+
     document.getElementById('clear-button').addEventListener('click', ()=>{
         board = originalPuzzle.map(row => row.slice());
         updateDOM();
     });
-document.getElementById('solve-button').addEventListener('click', () =>{
-    board = solution.map(row => row.slice()); 
-    updateDOM();
-    checkWinCondition();
-});
+
+    document.getElementById('new-game-button').addEventListener('click', () => {
+        if(confirm("¿Querés generar un nuevo juego? Se perderá el tablero actual.")){
+            startNewGame();
+        }
+    });
 }
+
 function startNewGame(){
+    // Si pide un juego nuevo, borramos el guardado viejo
+    localStorage.removeItem('sudoku_saved_game'); 
+    
     const boardElement = document.getElementById('sudoku-board');
     
-    // 1. Borramos el tablero AL INSTANTE y ponemos un texto temporal
     boardElement.innerHTML = '<h3 style="grid-column: span 3; text-align: center; margin-top: 50px;">Generando... ⏳</h3>';
     selectedCell = null;
 
-    // 2. Le damos 50 milisegundos de respiro al navegador para pintar el texto
     setTimeout(() => {
-        // Borramos el texto
         boardElement.innerHTML = '';
-        
-        // Creamos todo
         createGridDOM();
 
         let solvedBoard = Array(9).fill(0).map(()=> Array(9).fill(0));
@@ -269,13 +270,20 @@ function startNewGame(){
         board = originalPuzzle.map(row => row.slice());
 
         updateDOM();
-    }, 50); // <-- Esta pausa es la magia
+    }, 50);
 }
+
 function init(){
     setupEventListeners();
     setupControlButtons();
 
-    startNewGame();
+    // Verificamos si hay partida guardada
+    if (loadGame()) {
+        createGridDOM(); 
+        updateDOM();     
+    } else {
+        startNewGame();
+    }
 }
 
 function createGridDOM(){
@@ -283,22 +291,20 @@ function createGridDOM(){
 
     for (let i = 0; i < 9; i++){
         const boxElement = document.createElement('div');
-        boxElement.classList.add('box')
+        boxElement.classList.add('box');
 
         for (let j = 0; j < 9; j++){
-        const cellElement = document.createElement('div');
-        cellElement.classList.add('cell');
-        
-        const row = Math.floor(i/3)*3 + Math.floor(j/3);
-        const col = (i%3) * 3 + (j%3);
+            const cellElement = document.createElement('div');
+            cellElement.classList.add('cell');
+            
+            const row = Math.floor(i/3)*3 + Math.floor(j/3);
+            const col = (i%3) * 3 + (j%3);
 
-        cellElement.id = `cell-${row}-${col}`;
-
-        boxElement.appendChild(cellElement);
+            cellElement.id = `cell-${row}-${col}`;
+            boxElement.appendChild(cellElement);
+        }
+        boardElement.appendChild(boxElement);
     }
-    boardElement.appendChild(boxElement)
-    }
-    
 }
 
-window.onload = init
+window.onload = init;
