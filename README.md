@@ -33,8 +33,8 @@ El núcleo del generador utiliza recursividad (Backtracking):
 
 ## 📸 Capturas de Pantalla
 
-![Vista Escritorio]([Ruta a tu imagen, ej: ./img/screenshot-pc.png])
-![Vista Móvil]([Ruta a tu imagen, ej: ./img/screenshot-mobile.png])
+![Vista Escritorio]./assets/img/desktop.png
+![Vista Móvil]./assets/img/mobile.png
 
 ## 📦 Instalación / Uso Local
 
